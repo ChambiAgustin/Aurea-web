@@ -296,6 +296,46 @@
 
 
   <!-- ══════════════════════════════════════
+       ACCESO ADMIN (discreto)
+       ══════════════════════════════════════ -->
+
+  <!-- Botón fantasma — redirige al panel admin con su propio login -->
+  <a
+    href="admin.html"
+    id="adminAccessBtn"
+    aria-label="Acceso interno"
+    title=""
+  >
+    <ion-icon name="person-outline"></ion-icon>
+  </a>
+
+  <style>
+    #adminAccessBtn {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      z-index: 400;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(201, 168, 76, 0.18);
+      font-size: 1rem;
+      text-decoration: none;
+      border-radius: 50%;
+      transition: color 0.4s ease, transform 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #adminAccessBtn:hover {
+      color: rgba(201, 168, 76, 0.55);
+      transform: scale(1.15);
+    }
+  </style>
+
+
+
+  <!-- ══════════════════════════════════════
        SCRIPTS
        ══════════════════════════════════════ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
