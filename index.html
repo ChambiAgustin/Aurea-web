@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Áurea Elizabeth — Artículos Holísticos</title>
+  <meta name="description" content="Descubrí nuestra selección de artículos holísticos: sahumerios, cristales, aceites esenciales y más. Envíos y retiro en local." />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Áurea Elizabeth" />
+  <meta property="og:description" content="Artículos holísticos premium. Descubrí el bienestar que merecés." />
+  <meta property="og:image"       content="logo.jpeg" />
+  <meta property="og:type"        content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- PWA -->
+  <link rel="manifest" href="site.webmanifest" />
+  <meta name="theme-color" content="#C9A84C" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       SPLASH SCREEN (intro animación)
+       ══════════════════════════════════════ -->
+  <div id="splash" class="splash">
+
+    <div class="incense-scene">
+
+      <!-- Sahumerio izquierdo -->
+      <div class="incense-stick">
+        <div class="smoke-area">
+          <span class="sp"></span>
+          <span class="sp"></span>
+          <span class="sp"></span>
+        </div>
+        <div class="stick-tip"></div>
+        <div class="stick-body"></div>
+      </div>
+
+      <!-- Sahumerio central (más alto) -->
+      <div class="incense-stick">
+        <div class="smoke-area">
+          <span class="sp"></span>
+          <span class="sp"></span>
+          <span class="sp"></span>
+          <span class="sp"></span>
+          <span class="sp"></span>
+          <span class="sp"></span>
+        </div>
+        <div class="stick-tip"></div>
+        <div class="stick-body"></div>
+      </div>
+
+      <!-- Sahumerio derecho -->
+      <div class="incense-stick">
+        <div class="smoke-area">
+          <span class="sp"></span>
+          <span class="sp"></span>
+          <span class="sp"></span>
+        </div>
+        <div class="stick-tip"></div>
+        <div class="stick-body"></div>
+      </div>
+
+    </div>
+
+    <div class="splash-logo">
+      <img src="logo.jpeg" alt="Áurea Elizabeth" />
+    </div>
+
+    <p class="splash-tagline">Descubrí el bienestar que merecés</p>
+
+    <button class="splash-skip" id="splashSkip">
+      Ingresar <ion-icon name="arrow-forward-outline"></ion-icon>
+    </button>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       PROMO BANNER (admin-controlled)
+       ══════════════════════════════════════ -->
+  <div class="promo-bar" id="promoBanner"></div>
+
+
+  <!-- ══════════════════════════════════════
+       APP (visible después del splash)
+       ══════════════════════════════════════ -->
+  <div id="app" class="hidden">
+
+    <!-- ── Navigation ── -->
+    <header class="nav-header" id="navHeader">
+      <div class="nav-inner">
+
+        <a href="index.html" class="nav-logo">
+          <img src="logo.jpeg" alt="Áurea Elizabeth" />
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Inicio</a></li>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="#categorias">Categorías</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+
+        <a href="carrito.html" class="nav-cart-btn" id="navCartBtn">
+          <ion-icon name="bag-outline"></ion-icon>
+          Carrito
+          <span class="cart-badge" id="navCartBadge">0</span>
+        </a>
+
+      </div>
+    </header>
+
+
+    <!-- ── Hero ── -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-particles" id="heroParticles"></div>
+
+      <div class="container">
+        <div class="hero-content">
+
+          <p class="hero-eyebrow">Bienvenida a Áurea Elizabeth</p>
+
+          <h1 class="hero-title">
+            Artículos
+            <span class="highlight">Holísticos</span>
+            Premium
+          </h1>
+
+          <p class="hero-desc">
+            Sahumerios, cristales, aceites esenciales y mucho más.
+            Cada artículo seleccionado para acompañar tu camino
+            hacia el equilibrio y el bienestar.
+          </p>
+
+          <div class="hero-actions">
+            <a href="catalogo.html" class="btn-primary">
+              Ver catálogo
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+            </a>
+            <a href="#destacados" class="btn-secondary">
+              Productos destacados
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ── Categorías ── -->
+    <section class="categories-section" id="categorias">
+      <div class="container">
+
+        <div class="section-header">
+          <span class="section-eyebrow">Explorá por</span>
+          <h2 class="section-title">Categorías</h2>
+          <div class="section-divider"></div>
+        </div>
+
+        <div class="categories-grid" id="categoriesGrid">
+          <!-- Skeletons mientras cargan -->
+          <div class="skeleton" style="min-height:130px"></div>
+          <div class="skeleton" style="min-height:130px"></div>
+          <div class="skeleton" style="min-height:130px"></div>
+          <div class="skeleton" style="min-height:130px"></div>
+          <div class="skeleton" style="min-height:130px"></div>
+          <div class="skeleton" style="min-height:130px"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ── Productos Destacados ── -->
+    <section class="featured-section" id="destacados">
+      <div class="container">
+
+        <div class="section-header">
+          <span class="section-eyebrow">Lo más elegido</span>
+          <h2 class="section-title">Productos Destacados</h2>
+          <div class="section-divider"></div>
+        </div>
+
+        <div class="products-grid" id="featuredGrid">
+          <!-- Skeletons -->
+          <div class="skeleton" style="min-height:340px"></div>
+          <div class="skeleton" style="min-height:340px"></div>
+          <div class="skeleton" style="min-height:340px"></div>
+          <div class="skeleton" style="min-height:340px"></div>
+        </div>
+
+        <div class="section-footer">
+          <a href="catalogo.html" class="btn-secondary">
+            Ver catálogo completo
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ── Footer ── -->
+    <footer class="footer" id="contacto">
+      <div class="container">
+
+        <div class="footer-grid">
+
+          <div class="footer-brand">
+            <img src="logo.jpeg" alt="Áurea Elizabeth" />
+            <p>Artículos holísticos seleccionados con amor,
+               para tu bienestar y el de quienes querés.</p>
+          </div>
+
+          <div>
+            <p class="footer-title">Navegación</p>
+            <ul class="footer-links">
+              <li><a href="index.html">Inicio</a></li>
+              <li><a href="catalogo.html">Catálogo</a></li>
+              <li><a href="carrito.html">Mi carrito</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <p class="footer-title">Contacto</p>
+            <ul class="footer-links">
+              <li><a href="#" id="footerWhatsapp">
+                <ion-icon name="logo-whatsapp"></ion-icon> WhatsApp
+              </a></li>
+              <li><a href="#" id="footerInstagram">
+                <ion-icon name="logo-instagram"></ion-icon> Instagram
+              </a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="footer-bottom">
+          <p class="footer-copy">© 2025 Áurea Elizabeth. Todos los derechos reservados.</p>
+        </div>
+
+      </div>
+    </footer>
+
+
+    <!-- ── Mobile Bottom Nav ── -->
+    <nav class="bottom-nav">
+      <ul class="bottom-nav-items">
+
+        <li>
+          <a href="index.html" class="bottom-nav-item active">
+            <ion-icon name="home-outline"></ion-icon>
+            Inicio
+          </a>
+        </li>
+
+        <li>
+          <a href="catalogo.html" class="bottom-nav-item">
+            <ion-icon name="grid-outline"></ion-icon>
+            Catálogo
+          </a>
+        </li>
+
+        <li>
+          <a href="carrito.html" class="bottom-nav-item" id="mobileCartItem">
+            <ion-icon name="bag-outline"></ion-icon>
+            Carrito
+            <span class="cart-badge" id="mobileCartBadge">0</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+
+
+    <!-- ── FAB Cart (desktop) ── -->
+    <a href="carrito.html" class="fab-cart" id="fabCart" aria-label="Ver carrito">
+      <ion-icon name="bag-outline"></ion-icon>
+      <span class="cart-badge" id="fabCartBadge">0</span>
+    </a>
+
+  </div><!-- /#app -->
+
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS
+       ══════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/index.js"></script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('[SW] Registrado:', reg.scope))
+          .catch(err => console.warn('[SW] Error al registrar:', err));
+      });
+    }
+  </script>
+
+</body>
+</html>

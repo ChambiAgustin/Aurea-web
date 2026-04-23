@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo — Áurea Elizabeth</title>
+  <meta name="description" content="Explorá nuestro catálogo de artículos holísticos. Sahumerios, cristales, aceites esenciales, velas y más." />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Catálogo — Áurea Elizabeth" />
+  <meta property="og:description" content="Artículos holísticos premium para tu bienestar." />
+  <meta property="og:image"       content="logo.jpeg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- PWA -->
+  <link rel="manifest" href="site.webmanifest" />
+  <meta name="theme-color" content="#C9A84C" />
+
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       PROMO BANNER
+       ══════════════════════════════════════ -->
+  <div class="promo-bar" id="promoBanner"></div>
+
+
+  <!-- ══════════════════════════════════════
+       NAVIGATION
+       ══════════════════════════════════════ -->
+  <header class="nav-header" id="navHeader">
+    <div class="nav-inner">
+
+      <a href="index.html" class="nav-logo">
+        <img src="logo.jpeg" alt="Áurea Elizabeth" />
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="catalogo.html" class="active">Catálogo</a></li>
+        <li><a href="index.html#categorias">Categorías</a></li>
+        <li><a href="index.html#contacto">Contacto</a></li>
+      </ul>
+
+      <a href="carrito.html" class="nav-cart-btn">
+        <ion-icon name="bag-outline"></ion-icon>
+        Carrito
+        <span class="cart-badge" id="navCartBadge">0</span>
+      </a>
+
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════
+       CATALOG HERO (compact)
+       ══════════════════════════════════════ -->
+  <section class="catalog-hero">
+    <div class="catalog-hero-bg"></div>
+    <div class="catalog-hero-content">
+      <h1 class="catalog-title">Catálogo</h1>
+      <p class="catalog-subtitle">Encontrá el artículo que tu alma necesita</p>
+
+      <div class="search-wrap">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <input
+          type="search"
+          class="search-input"
+          id="searchInput"
+          placeholder="Buscar productos..."
+          autocomplete="off"
+        />
+        <ion-icon name="close-outline" class="search-clear" id="searchClear"></ion-icon>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════
+       FILTER BAR (sticky)
+       ══════════════════════════════════════ -->
+  <div class="filter-bar" id="filterBar">
+    <div class="filter-bar-inner">
+
+      <div class="filter-chips" id="filterChips">
+        <!-- Se generan desde Supabase -->
+        <button class="filter-chip active" data-slug="all">Todos</button>
+      </div>
+
+      <select class="sort-select" id="sortSelect" aria-label="Ordenar por">
+        <option value="orden">Destacados</option>
+        <option value="precio_asc">Menor precio</option>
+        <option value="precio_desc">Mayor precio</option>
+        <option value="reciente">Más recientes</option>
+        <option value="nombre">A → Z</option>
+      </select>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       CATALOG GRID
+       ══════════════════════════════════════ -->
+  <section class="catalog-section">
+    <div class="container">
+
+      <div class="catalog-meta">
+        <p class="catalog-count" id="catalogCount"></p>
+      </div>
+
+      <div class="products-grid" id="productsGrid">
+        <!-- Skeletons mientras cargan -->
+        <div class="skeleton" style="min-height:340px"></div>
+        <div class="skeleton" style="min-height:340px"></div>
+        <div class="skeleton" style="min-height:340px"></div>
+        <div class="skeleton" style="min-height:340px"></div>
+        <div class="skeleton" style="min-height:340px"></div>
+        <div class="skeleton" style="min-height:340px"></div>
+        <div class="skeleton" style="min-height:340px"></div>
+        <div class="skeleton" style="min-height:340px"></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════
+       PRODUCT DETAIL MODAL
+       ══════════════════════════════════════ -->
+  <div class="modal-overlay" id="productModal" role="dialog" aria-modal="true">
+    <div class="modal-content" id="modalContent">
+
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+      <!-- Image side -->
+      <div class="modal-img-wrap" id="modalImgWrap">
+        <img id="modalImg" src="" alt="" />
+        <span id="modalBadge" class="modal-img-badge"></span>
+      </div>
+
+      <!-- Info side -->
+      <div class="modal-info" id="modalInfo">
+        <p class="modal-category" id="modalCategory"></p>
+        <h2 class="modal-name"   id="modalName"></h2>
+        <p class="modal-desc"    id="modalDesc"></p>
+
+        <div class="modal-divider"></div>
+
+        <div class="modal-price-row">
+          <span class="modal-price"     id="modalPrice"></span>
+          <span class="modal-price-old" id="modalPriceOld"></span>
+        </div>
+
+        <p class="modal-stock-info" id="modalStock"></p>
+
+        <div class="qty-row">
+          <div class="qty-selector">
+            <button class="qty-btn" id="qtyMinus" aria-label="Restar">
+              <ion-icon name="remove-outline"></ion-icon>
+            </button>
+            <span class="qty-value" id="qtyValue">1</span>
+            <button class="qty-btn" id="qtyPlus" aria-label="Sumar">
+              <ion-icon name="add-outline"></ion-icon>
+            </button>
+          </div>
+
+          <button class="modal-add-btn" id="modalAddBtn">
+            <ion-icon name="bag-add-outline"></ion-icon>
+            Agregar al carrito
+          </button>
+
+          <button class="modal-share-btn" id="modalShareBtn" aria-label="Compartir">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       MOBILE BOTTOM NAV
+       ══════════════════════════════════════ -->
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-items">
+      <li>
+        <a href="index.html" class="bottom-nav-item">
+          <ion-icon name="home-outline"></ion-icon>
+          Inicio
+        </a>
+      </li>
+      <li>
+        <a href="catalogo.html" class="bottom-nav-item active">
+          <ion-icon name="grid-outline"></ion-icon>
+          Catálogo
+        </a>
+      </li>
+      <li>
+        <a href="carrito.html" class="bottom-nav-item">
+          <ion-icon name="bag-outline"></ion-icon>
+          Carrito
+          <span class="cart-badge" id="mobileCartBadge">0</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+
+  <!-- FAB Cart (desktop) -->
+  <a href="carrito.html" class="fab-cart" aria-label="Ver carrito">
+    <ion-icon name="bag-outline"></ion-icon>
+    <span class="cart-badge" id="fabCartBadge">0</span>
+  </a>
+
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS
+       ══════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/catalogo.js"></script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('[SW] Registrado:', reg.scope))
+          .catch(err => console.warn('[SW] Error al registrar:', err));
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Áurea Elizabeth</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="admin-body">
+
+
+  <!-- ══════════════════════════════════════
+       LOGIN SCREEN
+       ══════════════════════════════════════ -->
+  <div class="admin-login" id="loginScreen">
+
+    <div class="login-card">
+      <img src="logo.jpeg" alt="Áurea Elizabeth" class="login-logo" />
+      <h1 class="login-title">Panel de Administración</h1>
+      <p class="login-subtitle">Ingresá con tu cuenta para continuar</p>
+
+      <form class="login-form" id="loginForm" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="admin@aurea.com" required autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Contraseña</label>
+          <div class="pw-wrap">
+            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password" />
+            <button type="button" class="pw-toggle" id="pwToggle" aria-label="Mostrar contraseña">
+              <ion-icon name="eye-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <p class="login-error hidden" id="loginError"></p>
+
+        <button type="submit" class="btn-primary login-btn" id="loginBtn">
+          Ingresar
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+
+      </form>
+    </div>
+
+  </div><!-- /#loginScreen -->
+
+
+  <!-- ══════════════════════════════════════
+       MAIN ADMIN APP
+       ══════════════════════════════════════ -->
+  <div class="admin-layout hidden" id="adminApp">
+
+    <!-- ── Sidebar ── -->
+    <aside class="admin-sidebar" id="adminSidebar">
+
+      <div class="sidebar-brand">
+        <img src="logo.jpeg" alt="Áurea Elizabeth" />
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="sidebar-item active" data-section="dashboard">
+          <ion-icon name="grid-outline"></ion-icon>
+          <span>Dashboard</span>
+        </button>
+        <button class="sidebar-item" data-section="pedidos">
+          <ion-icon name="receipt-outline"></ion-icon>
+          <span>Pedidos</span>
+          <span class="sidebar-badge hidden" id="pedidosBadge">0</span>
+        </button>
+        <button class="sidebar-item" data-section="productos">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>Productos</span>
+        </button>
+        <button class="sidebar-item" data-section="categorias">
+          <ion-icon name="pricetags-outline"></ion-icon>
+          <span>Categorías</span>
+        </button>
+        <button class="sidebar-item" data-section="promociones">
+          <ion-icon name="megaphone-outline"></ion-icon>
+          <span>Promociones</span>
+        </button>
+        <button class="sidebar-item" data-section="config">
+          <ion-icon name="settings-outline"></ion-icon>
+          <span>Configuración</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="index.html" class="sidebar-link" target="_blank">
+          <ion-icon name="open-outline"></ion-icon>
+          Ver tienda
+        </a>
+        <button class="sidebar-link" id="logoutBtn">
+          <ion-icon name="log-out-outline"></ion-icon>
+          Salir
+        </button>
+      </div>
+
+    </aside><!-- /.admin-sidebar -->
+
+
+    <!-- ── Main content ── -->
+    <main class="admin-main">
+
+      <!-- Mobile header -->
+      <div class="admin-topbar">
+        <button class="topbar-menu-btn" id="sidebarToggle">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
+        <span class="topbar-title" id="topbarTitle">Dashboard</span>
+        <span class="topbar-user" id="topbarUser"></span>
+      </div>
+
+
+      <!-- ════════ DASHBOARD ════════ -->
+      <section class="admin-section" id="sectionDashboard">
+        <div class="section-header-admin">
+          <h2 class="section-title-admin">Dashboard</h2>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <ion-icon name="cube-outline" class="stat-icon"></ion-icon>
+            <p class="stat-value" id="statProductos">—</p>
+            <p class="stat-label">Productos activos</p>
+          </div>
+          <div class="stat-card stat-card--alert">
+            <ion-icon name="receipt-outline" class="stat-icon"></ion-icon>
+            <p class="stat-value" id="statPedidos">—</p>
+            <p class="stat-label">Pedidos pendientes</p>
+          </div>
+          <div class="stat-card stat-card--warn">
+            <ion-icon name="warning-outline" class="stat-icon"></ion-icon>
+            <p class="stat-value" id="statStockBajo">—</p>
+            <p class="stat-label">Productos con stock bajo</p>
+          </div>
+        </div>
+
+        <div class="dashboard-recent">
+          <h3 class="subsection-title">Últimos pedidos recibidos</h3>
+          <div id="dashboardPedidos"></div>
+        </div>
+      </section>
+
+
+      <!-- ════════ PEDIDOS ════════ -->
+      <section class="admin-section hidden" id="sectionPedidos">
+        <div class="section-header-admin">
+          <h2 class="section-title-admin">Pedidos</h2>
+          <div class="section-filters">
+            <select class="admin-select" id="pedidosFilter">
+              <option value="pendiente">Pendientes</option>
+              <option value="confirmado">Confirmados</option>
+              <option value="rechazado">Rechazados</option>
+              <option value="all">Todos</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="pedidosList"></div>
+      </section>
+
+
+      <!-- ════════ PRODUCTOS ════════ -->
+      <section class="admin-section hidden" id="sectionProductos">
+        <div class="section-header-admin">
+          <h2 class="section-title-admin">Productos</h2>
+          <button class="btn-primary btn-sm" id="newProductoBtn">
+            <ion-icon name="add-outline"></ion-icon>
+            Nuevo producto
+          </button>
+        </div>
+
+        <div class="admin-toolbar">
+          <div class="search-wrap" style="max-width:300px">
+            <ion-icon name="search-outline" class="search-icon"></ion-icon>
+            <input type="search" class="search-input" id="productosSearch" placeholder="Buscar..." />
+          </div>
+          <select class="admin-select" id="productosCatFilter">
+            <option value="all">Todas las categorías</option>
+          </select>
+        </div>
+
+        <div id="productosTable"></div>
+      </section>
+
+
+      <!-- ════════ CATEGORÍAS ════════ -->
+      <section class="admin-section hidden" id="sectionCategorias">
+        <div class="section-header-admin">
+          <h2 class="section-title-admin">Categorías</h2>
+          <button class="btn-primary btn-sm" id="newCategoriaBtn">
+            <ion-icon name="add-outline"></ion-icon>
+            Nueva categoría
+          </button>
+        </div>
+        <div id="categoriasTable"></div>
+      </section>
+
+
+      <!-- ════════ PROMOCIONES ════════ -->
+      <section class="admin-section hidden" id="sectionPromociones">
+        <div class="section-header-admin">
+          <h2 class="section-title-admin">Promociones</h2>
+          <button class="btn-primary btn-sm" id="newPromocionBtn">
+            <ion-icon name="add-outline"></ion-icon>
+            Nueva promoción
+          </button>
+        </div>
+        <div id="promocionesTable"></div>
+      </section>
+
+
+      <!-- ════════ CONFIGURACIÓN ════════ -->
+      <section class="admin-section hidden" id="sectionConfig">
+        <div class="section-header-admin">
+          <h2 class="section-title-admin">Configuración</h2>
+        </div>
+
+        <div class="config-grid">
+
+          <div class="config-card">
+            <h3 class="config-card-title">
+              <ion-icon name="logo-whatsapp"></ion-icon>
+              WhatsApp y Contacto
+            </h3>
+            <div class="form-group">
+              <label class="form-label">Número de WhatsApp</label>
+              <input type="text" class="form-input" id="cfgWhatsapp" placeholder="549XXXXXXXXXX" />
+              <p class="form-hint">Sin + ni espacios. Ej: 5491112345678</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Usuario de Instagram</label>
+              <input type="text" class="form-input" id="cfgInstagram" placeholder="aurea.elizabeth" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Intro del mensaje de WhatsApp</label>
+              <input type="text" class="form-input" id="cfgMensaje" placeholder="🌿 *Nuevo pedido — Áurea Elizabeth*" />
+            </div>
+          </div>
+
+          <div class="config-card">
+            <h3 class="config-card-title">
+              <ion-icon name="car-outline"></ion-icon>
+              Envíos
+            </h3>
+            <div class="form-group">
+              <label class="form-label">Monto mínimo para envío gratis ($)</label>
+              <input type="number" class="form-input" id="cfgEnvioGratis" placeholder="10000" min="0" />
+              <p class="form-hint">Ponés 0 para que siempre sea gratis</p>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <h3 class="config-card-title">
+              <ion-icon name="storefront-outline"></ion-icon>
+              Retiro en local
+            </h3>
+            <div class="form-group">
+              <label class="form-label">Dirección del local</label>
+              <input type="text" class="form-input" id="cfgDireccionLocal" placeholder="Av. Ejemplo 1234, Ciudad" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Horarios</label>
+              <input type="text" class="form-input" id="cfgHorario" placeholder="Lun a Vie 10hs - 18hs" />
+            </div>
+          </div>
+
+          <div class="config-card">
+            <h3 class="config-card-title">
+              <ion-icon name="megaphone-outline"></ion-icon>
+              Banner promocional
+            </h3>
+            <div class="form-group">
+              <div class="toggle-row">
+                <label class="form-label">Mostrar banner</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="cfgBannerActivo" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Texto del banner</label>
+              <input type="text" class="form-input" id="cfgBannerTexto" placeholder="🌿 Envío gratis en compras +$10.000" />
+            </div>
+          </div>
+
+          <div class="config-card">
+            <h3 class="config-card-title">
+              <ion-icon name="time-outline"></ion-icon>
+              Control de stock
+            </h3>
+            <div class="form-group">
+              <label class="form-label">Horas para expirar reserva</label>
+              <input type="number" class="form-input" id="cfgHorasReserva" placeholder="24" min="1" max="72" />
+              <p class="form-hint">Tiempo hasta que un pedido pendiente sin confirmar libera el stock</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="config-footer">
+          <button class="btn-primary" id="saveConfigBtn">
+            <ion-icon name="save-outline"></ion-icon>
+            Guardar configuración
+          </button>
+        </div>
+      </section>
+
+    </main><!-- /.admin-main -->
+
+  </div><!-- /#adminApp -->
+
+
+  <!-- ══════════════════════════════════════
+       PRODUCTO FORM MODAL
+       ══════════════════════════════════════ -->
+  <div class="admin-modal-overlay hidden" id="productoModal">
+    <div class="admin-modal">
+
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="productoModalTitle">Nuevo producto</h3>
+        <button class="admin-modal-close" id="productoModalClose">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="admin-modal-body">
+
+        <!-- Image upload -->
+        <div class="image-upload-area" id="imageUploadArea">
+          <img class="image-preview hidden" id="imagePreview" alt="Preview" />
+          <div class="image-upload-placeholder" id="imageUploadPlaceholder">
+            <ion-icon name="image-outline"></ion-icon>
+            <p>Hacé click o arrastrá una imagen</p>
+            <span>JPG, PNG, WEBP — máx. 5MB</span>
+          </div>
+          <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" class="hidden" />
+          <button class="image-change-btn hidden" id="imageChangeBtn">
+            <ion-icon name="camera-outline"></ion-icon>
+            Cambiar imagen
+          </button>
+        </div>
+
+        <div class="admin-form-grid">
+
+          <div class="form-group span-2">
+            <label class="form-label">Nombre del producto *</label>
+            <input type="text" class="form-input" id="pNombre" placeholder="Ej: Sahumerio de Sándalo" required />
+          </div>
+
+          <div class="form-group span-2">
+            <label class="form-label">Descripción corta</label>
+            <input type="text" class="form-input" id="pDescCorta" placeholder="Una línea breve para la card" />
+          </div>
+
+          <div class="form-group span-2">
+            <label class="form-label">Descripción completa</label>
+            <textarea class="form-textarea" id="pDescLarga" rows="3" placeholder="Descripción detallada que aparece en el modal de detalle"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Precio *</label>
+            <input type="number" class="form-input" id="pPrecio" placeholder="0.00" min="0" step="0.01" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Precio de oferta</label>
+            <input type="number" class="form-input" id="pPrecioOferta" placeholder="Dejar vacío si no hay oferta" min="0" step="0.01" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Categoría</label>
+            <select class="form-input" id="pCategoria">
+              <option value="">Sin categoría</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Stock inicial</label>
+            <input type="number" class="form-input" id="pStock" placeholder="0" min="0" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Orden en el catálogo</label>
+            <input type="number" class="form-input" id="pOrden" placeholder="0" min="0" />
+          </div>
+
+          <div class="form-group">
+            <div class="toggle-row">
+              <label class="form-label">Activo (visible en tienda)</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="pActivo" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="toggle-row">
+              <label class="form-label">Destacado en el inicio</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="pDestacado" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="btn-secondary" id="productoModalCancel">Cancelar</button>
+        <button class="btn-primary" id="productoModalSave">
+          <ion-icon name="save-outline"></ion-icon>
+          Guardar producto
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       CATEGORIA FORM MODAL
+       ══════════════════════════════════════ -->
+  <div class="admin-modal-overlay hidden" id="categoriaModal">
+    <div class="admin-modal admin-modal--sm">
+
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="categoriaModalTitle">Nueva categoría</h3>
+        <button class="admin-modal-close" id="categoriaModalClose">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="admin-modal-body">
+        <div class="form-group">
+          <label class="form-label">Icono (emoji) *</label>
+          <input type="text" class="form-input" id="cIcono" placeholder="🌿" maxlength="4" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre *</label>
+          <input type="text" class="form-input" id="cNombre" placeholder="Ej: Sahumerios" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slug (URL) *</label>
+          <input type="text" class="form-input" id="cSlug" placeholder="sahumerios" required />
+          <p class="form-hint">Solo minúsculas, sin espacios ni caracteres especiales</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Orden</label>
+          <input type="number" class="form-input" id="cOrden" placeholder="0" min="0" />
+        </div>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="btn-secondary" id="categoriaModalCancel">Cancelar</button>
+        <button class="btn-primary" id="categoriaModalSave">
+          <ion-icon name="save-outline"></ion-icon>
+          Guardar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       PROMOCIÓN FORM MODAL
+       ══════════════════════════════════════ -->
+  <div class="admin-modal-overlay hidden" id="promocionModal">
+    <div class="admin-modal">
+
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="promocionModalTitle">Nueva promoción</h3>
+        <button class="admin-modal-close" id="promocionModalClose">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="admin-modal-body">
+        <div class="admin-form-grid">
+          
+          <div class="form-group span-2">
+            <label class="form-label">Título *</label>
+            <input type="text" class="form-input" id="prTitulo" placeholder="Ej: Hot Sale - 20% Off" required />
+          </div>
+
+          <div class="form-group span-2">
+            <label class="form-label">Descripción</label>
+            <input type="text" class="form-input" id="prDesc" placeholder="Breve descripción de la promo" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tipo de descuento *</label>
+            <select class="form-input" id="prTipo">
+              <option value="porcentaje">Porcentaje (%)</option>
+              <option value="monto_fijo">Monto Fijo ($)</option>
+              <option value="2x1">2x1</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Valor del descuento</label>
+            <input type="number" class="form-input" id="prValor" placeholder="Ej: 20" min="0" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Aplicar a Producto</label>
+            <select class="form-input" id="prProducto">
+              <option value="">Todo el catálogo</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Aplicar a Categoría</label>
+            <select class="form-input" id="prCategoria">
+              <option value="">Todas las categorías</option>
+            </select>
+            <p class="form-hint">Elegí producto O categoría. Si dejás ambos vacíos, aplica a todo.</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Fecha de Inicio</label>
+            <input type="datetime-local" class="form-input" id="prInicio" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Fecha de Fin</label>
+            <input type="datetime-local" class="form-input" id="prFin" />
+          </div>
+
+          <div class="form-group span-2">
+            <div class="toggle-row">
+              <label class="form-label">Activa</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="prActivo" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="btn-secondary" id="promocionModalCancel">Cancelar</button>
+        <button class="btn-primary" id="promocionModalSave">
+          <ion-icon name="save-outline"></ion-icon>
+          Guardar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       CONFIRM DIALOG
+       ══════════════════════════════════════ -->
+  <div class="admin-modal-overlay hidden" id="confirmModal">
+    <div class="admin-modal admin-modal--sm">
+      <div class="admin-modal-body" style="text-align:center; padding: 2rem;">
+        <p class="confirm-dialog-icon" id="confirmIcon">⚠️</p>
+        <p class="confirm-dialog-msg" id="confirmMsg"></p>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn-secondary" id="confirmCancel">Cancelar</button>
+        <button class="btn-danger" id="confirmOk">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       TOAST NOTIFICATION
+       ══════════════════════════════════════ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS
+       ══════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin.js"></script>
+
+</body>
+</html>

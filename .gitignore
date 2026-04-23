@@ -1,0 +1,17 @@
+# Dependencias
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Archivos temporales de agentes
+.scratch/
+.claude/
+
+# Logs
+*.log

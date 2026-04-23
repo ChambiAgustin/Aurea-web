@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Carrito — Áurea Elizabeth</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- PWA -->
+  <link rel="manifest" href="site.webmanifest" />
+  <meta name="theme-color" content="#C9A84C" />
+
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       PROMO BANNER
+       ══════════════════════════════════════ -->
+  <div class="promo-bar" id="promoBanner"></div>
+
+
+  <!-- ══════════════════════════════════════
+       NAVIGATION
+       ══════════════════════════════════════ -->
+  <header class="nav-header" id="navHeader">
+    <div class="nav-inner">
+
+      <a href="index.html" class="nav-logo">
+        <img src="logo.jpeg" alt="Áurea Elizabeth" />
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="index.html#categorias">Categorías</a></li>
+        <li><a href="index.html#contacto">Contacto</a></li>
+      </ul>
+
+      <a href="carrito.html" class="nav-cart-btn active-page">
+        <ion-icon name="bag-outline"></ion-icon>
+        Carrito
+        <span class="cart-badge" id="navCartBadge">0</span>
+      </a>
+
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════
+       CART PAGE
+       ══════════════════════════════════════ -->
+  <main class="cart-page">
+    <div class="container">
+
+      <!-- Page header -->
+      <div class="cart-page-header">
+        <a href="catalogo.html" class="cart-back-link">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Seguir comprando
+        </a>
+        <h1 class="cart-page-title">Mi carrito</h1>
+      </div>
+
+
+      <!-- ── EMPTY STATE ── -->
+      <div class="cart-empty hidden" id="cartEmpty">
+        <div class="cart-empty-icon">🛍️</div>
+        <h2 class="cart-empty-title">Tu carrito está vacío</h2>
+        <p class="cart-empty-desc">Explorá nuestro catálogo y encontrá algo que te inspire</p>
+        <a href="catalogo.html" class="btn-primary" style="margin-top:1.5rem">
+          Ver catálogo
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+      </div>
+
+
+      <!-- ── CART CONTENT ── -->
+      <div class="cart-layout" id="cartLayout">
+
+        <!-- Left: items + form -->
+        <div class="cart-left">
+
+          <!-- Items list -->
+          <div class="cart-items-card">
+            <h2 class="cart-section-title">
+              Productos
+              <span class="cart-item-count" id="cartItemCount"></span>
+            </h2>
+            <div class="cart-items-list" id="cartItemsList"></div>
+          </div>
+
+
+          <!-- Delivery form -->
+          <div class="cart-delivery-card">
+            <h2 class="cart-section-title">Datos de entrega</h2>
+
+            <!-- Delivery mode tabs -->
+            <div class="delivery-tabs">
+              <button class="delivery-tab active" data-mode="envio" id="tabEnvio">
+                <ion-icon name="car-outline"></ion-icon>
+                Envío a domicilio
+              </button>
+              <button class="delivery-tab" data-mode="retiro" id="tabRetiro">
+                <ion-icon name="storefront-outline"></ion-icon>
+                Retiro en local
+              </button>
+            </div>
+
+            <form class="delivery-form" id="deliveryForm" novalidate>
+
+              <!-- Name (shared) -->
+              <div class="form-group">
+                <label class="form-label" for="fieldNombre">Nombre completo *</label>
+                <input
+                  type="text"
+                  id="fieldNombre"
+                  class="form-input"
+                  placeholder="Tu nombre y apellido"
+                  required
+                  autocomplete="name"
+                />
+              </div>
+
+              <!-- Phone (shared) -->
+              <div class="form-group">
+                <label class="form-label" for="fieldTelefono">Teléfono (opcional)</label>
+                <input
+                  type="tel"
+                  id="fieldTelefono"
+                  class="form-input"
+                  placeholder="Ej: 11 1234-5678"
+                  autocomplete="tel"
+                />
+              </div>
+
+              <!-- Address (only envío) -->
+              <div class="form-group" id="groupDireccion">
+                <label class="form-label" for="fieldDireccion">Dirección de entrega *</label>
+                <input
+                  type="text"
+                  id="fieldDireccion"
+                  class="form-input"
+                  placeholder="Calle, número, piso/depto, localidad"
+                  required
+                  autocomplete="street-address"
+                />
+              </div>
+
+              <!-- Pickup info (only retiro) -->
+              <div class="retiro-info hidden" id="retiroInfo">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <div>
+                  <strong id="retiroDireccion">Cargando dirección del local...</strong>
+                  <span id="retiroHorario"></span>
+                </div>
+              </div>
+
+              <!-- Notes (shared) -->
+              <div class="form-group">
+                <label class="form-label" for="fieldNotas">Notas adicionales (opcional)</label>
+                <textarea
+                  id="fieldNotas"
+                  class="form-textarea"
+                  placeholder="Indicaciones especiales, referencias, etc."
+                  rows="3"
+                ></textarea>
+              </div>
+
+            </form>
+          </div>
+
+        </div><!-- /.cart-left -->
+
+
+        <!-- Right: order summary -->
+        <div class="cart-right">
+          <div class="order-summary-card" id="orderSummary">
+
+            <h2 class="cart-section-title">Resumen</h2>
+
+            <div class="summary-rows">
+              <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="summarySubtotal">$0</span>
+              </div>
+              <div class="summary-row" id="summaryShippingRow">
+                <span>Envío</span>
+                <span id="summaryShipping">—</span>
+              </div>
+            </div>
+
+            <!-- Free shipping progress -->
+            <div class="shipping-progress" id="shippingProgress">
+              <div class="shipping-progress-bar">
+                <div class="shipping-progress-fill" id="shippingFill"></div>
+              </div>
+              <p class="shipping-progress-label" id="shippingLabel"></p>
+            </div>
+
+            <div class="summary-total-row">
+              <span>Total</span>
+              <span id="summaryTotal">$0</span>
+            </div>
+
+            <!-- Confirm button -->
+            <button class="confirm-btn" id="confirmBtn">
+              <ion-icon name="logo-whatsapp"></ion-icon>
+              Confirmar pedido por WhatsApp
+            </button>
+
+            <p class="confirm-note">
+              Te redirigimos a WhatsApp con el detalle completo de tu pedido.
+            </p>
+
+          </div>
+        </div><!-- /.cart-right -->
+
+      </div><!-- /#cartLayout -->
+
+
+      <!-- ── SUCCESS STATE ── -->
+      <div class="cart-success hidden" id="cartSuccess">
+        <div class="cart-success-icon">🌿</div>
+        <h2 class="cart-success-title">¡Pedido enviado!</h2>
+        <p class="cart-success-desc">
+          Tu pedido fue registrado. Te esperamos por WhatsApp para coordinar el pago y la entrega.
+        </p>
+        <div class="cart-success-actions">
+          <a href="catalogo.html" class="btn-primary">
+            <ion-icon name="grid-outline"></ion-icon>
+            Seguir comprando
+          </a>
+          <a href="index.html" class="btn-secondary">
+            Ir al inicio
+          </a>
+        </div>
+      </div>
+
+    </div><!-- /.container -->
+  </main>
+
+
+  <!-- ══════════════════════════════════════
+       MOBILE BOTTOM NAV
+       ══════════════════════════════════════ -->
+  <nav class="bottom-nav">
+    <ul class="bottom-nav-items">
+      <li>
+        <a href="index.html" class="bottom-nav-item">
+          <ion-icon name="home-outline"></ion-icon>
+          Inicio
+        </a>
+      </li>
+      <li>
+        <a href="catalogo.html" class="bottom-nav-item">
+          <ion-icon name="grid-outline"></ion-icon>
+          Catálogo
+        </a>
+      </li>
+      <li>
+        <a href="carrito.html" class="bottom-nav-item active">
+          <ion-icon name="bag-outline"></ion-icon>
+          Carrito
+          <span class="cart-badge" id="mobileCartBadge">0</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS
+       ══════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/carrito.js"></script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('[SW] Registrado:', reg.scope))
+          .catch(err => console.warn('[SW] Error al registrar:', err));
+      });
+    }
+  </script>
+
+</body>
+</html>
