@@ -2,8 +2,13 @@
    ÁUREA ELIZABETH — Design System
    ============================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap');
 
+.aurea-text {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
 /* Reset */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -11,6 +16,10 @@ img  { max-width: 100%; display: block; }
 a    { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 ul { list-style: none; }
+img[src="logo.jpeg"], img[src*="logo.jpeg"] {
+  mix-blend-mode: lighten;
+  filter: contrast(1.1) brightness(1.1);
+}
 
 body {
   font-family: var(--font-body);
@@ -312,7 +321,6 @@ body {
   height: var(--nav-height);
   display: flex;
   align-items: center;
-  padding: 0 var(--sp-6);
   background: rgba(13,10,14,0.82);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -327,6 +335,7 @@ body {
   width: 100%;
   max-width: var(--max-width);
   margin: 0 auto;
+  padding: 0 var(--sp-6);
 }
 
 .nav-logo img {
@@ -353,6 +362,95 @@ body {
 .nav-links a:hover,
 .nav-links a.active { color: var(--accent-gold); }
 
+.nav-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  transition: all var(--t-base);
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.nav-search-btn:hover,
+.nav-search-btn.active {
+  color: var(--accent-gold);
+  border-color: var(--border-glass);
+  background: rgba(201,168,76,0.06);
+}
+
+/* Search bar that slides below nav */
+.nav-search-bar {
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  background: rgba(13,10,14,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-glass);
+  transform: translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.25s ease;
+  z-index: 98;
+}
+
+.nav-search-bar.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.nav-search-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--sp-4) var(--sp-6);
+}
+
+.nav-search-ico {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.global-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--text-cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  padding: var(--sp-2) var(--sp-2);
+  outline: none;
+  transition: border-color var(--t-base);
+}
+
+.global-search-input:focus { border-color: var(--accent-gold); }
+.global-search-input::placeholder { color: var(--text-dim); }
+
+.nav-search-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 1.25rem;
+  transition: color var(--t-base);
+  flex-shrink: 0;
+  padding: var(--sp-1);
+}
+
+.nav-search-close:hover { color: var(--accent-gold); }
+
 .nav-cart-btn {
   display: inline-flex;
   align-items: center;
@@ -362,7 +460,7 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--accent-gold);
-  padding: var(--sp-2) var(--sp-5);
+  padding: var(--sp-3) var(--sp-6);
   border: 1px solid var(--border-glass);
   border-radius: var(--r-full);
   position: relative;
@@ -1516,6 +1614,269 @@ body {
 @media (max-width: 768px) {
   .catalog-section { padding-bottom: calc(var(--bottom-nav-height) + var(--sp-12)); }
   .filter-bar { top: var(--nav-height); }
+}
+
+
+/* =============================================
+   HERO SEARCH
+   ============================================= */
+.hero-search {
+  margin-top: var(--sp-6);
+  max-width: 480px;
+}
+
+.hero-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(13,10,14,0.55);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--r-full);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+  overflow: hidden;
+}
+
+.hero-search-wrap:focus-within {
+  border-color: var(--accent-gold);
+  box-shadow: var(--glow-gold);
+}
+
+.hero-search-icon {
+  position: absolute;
+  left: var(--sp-5);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.hero-search-input {
+  flex: 1;
+  padding: var(--sp-4) var(--sp-3) var(--sp-4) calc(var(--sp-5) + 1.1rem + var(--sp-3));
+  background: transparent;
+  border: none;
+  color: var(--text-cream);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  min-width: 0;
+}
+
+.hero-search-input::placeholder { color: var(--text-dim); }
+
+.hero-search-btn {
+  flex-shrink: 0;
+  margin: var(--sp-1);
+  padding: var(--sp-2) var(--sp-5);
+  background: var(--accent-gold);
+  color: #0D0A0E;
+  border: none;
+  border-radius: var(--r-full);
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--t-base);
+  white-space: nowrap;
+}
+
+.hero-search-btn:hover { background: var(--accent-amber); }
+
+
+/* =============================================
+   MARQUEE STRIP
+   ============================================= */
+.marquee-strip {
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--sp-5) 0;
+  position: relative;
+}
+
+.marquee-strip::before,
+.marquee-strip::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 100px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.marquee-strip::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-dark) 30%, transparent);
+}
+
+.marquee-strip::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-dark) 30%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  width: max-content;
+  animation: marqueeScroll 28s linear infinite;
+}
+
+.marquee-track:hover { animation-play-state: paused; }
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  color: var(--text-cream);
+  padding: 0 var(--sp-8);
+}
+
+.marquee-sep {
+  color: var(--accent-gold);
+  font-size: 0.65rem;
+  opacity: 0.65;
+  padding: 0 var(--sp-2);
+  flex-shrink: 0;
+}
+
+
+/* =============================================
+   RITUAL PHRASES SECTION
+   ============================================= */
+.ritual-phrases {
+  padding: var(--sp-16) var(--sp-6);
+  text-align: center;
+  background: var(--bg-base);
+  position: relative;
+}
+
+.ritual-phrases::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 55% 65% at 50% 50%, rgba(107,63,160,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ritual-phrase {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  display: block;
+  position: relative;
+}
+
+.ritual-heart {
+  display: block;
+  margin: var(--sp-8) auto;
+  color: var(--accent-gold);
+  width: 52px;
+  height: 58px;
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.3));
+}
+
+
+/* =============================================
+   CATEGORIES PHOTO GRID
+   ============================================= */
+.categories-photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-auto-rows: 260px;
+  gap: var(--sp-3);
+}
+
+.category-photo-card {
+  position: relative;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform var(--t-base), box-shadow var(--t-base);
+}
+
+.category-photo-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(13,10,14,0.82) 0%,
+    rgba(13,10,14,0.35) 45%,
+    rgba(13,10,14,0.08) 100%
+  );
+  transition: background var(--t-slow);
+}
+
+.category-photo-card:hover {
+  transform: scale(1.025);
+  box-shadow: 0 16px 56px rgba(0,0,0,0.65), var(--glow-gold);
+}
+
+.category-photo-card:hover::after {
+  background: linear-gradient(
+    to top,
+    rgba(13,10,14,0.9) 0%,
+    rgba(13,10,14,0.45) 50%,
+    rgba(13,10,14,0.15) 100%
+  );
+}
+
+.category-photo-name {
+  position: absolute;
+  bottom: var(--sp-5);
+  left: var(--sp-5);
+  right: var(--sp-5);
+  z-index: 1;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.55rem);
+  font-weight: 500;
+  font-style: italic;
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+}
+
+.category-photo-card:nth-child(1) { grid-row: span 2; }
+.category-photo-card:nth-child(6) { grid-column: span 2; }
+
+@media (max-width: 900px) {
+  .categories-photo-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 200px;
+  }
+  .category-photo-card:nth-child(1) { grid-row: span 1; }
+  .category-photo-card:nth-child(6) { grid-column: span 2; }
+}
+
+@media (max-width: 480px) {
+  .categories-photo-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 150px;
+    gap: var(--sp-2);
+  }
+  .category-photo-card:nth-child(1) { grid-row: span 1; }
+  .category-photo-card:nth-child(6) { grid-column: span 1; }
+  .category-photo-name { font-size: 1rem; bottom: var(--sp-3); left: var(--sp-3); right: var(--sp-3); }
 }
 
 

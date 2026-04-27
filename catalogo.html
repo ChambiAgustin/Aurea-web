@@ -52,6 +52,10 @@
         <li><a href="index.html#contacto">Contacto</a></li>
       </ul>
 
+      <button class="nav-search-btn" id="navSearchBtn" aria-label="Buscar">
+        <ion-icon name="search-outline"></ion-icon>
+      </button>
+
       <a href="carrito.html" class="nav-cart-btn">
         <ion-icon name="bag-outline"></ion-icon>
         Carrito
@@ -59,6 +63,23 @@
       </a>
 
     </div>
+
+    <div class="nav-search-bar" id="navSearchBar">
+      <div class="nav-search-bar-inner">
+        <ion-icon name="search-outline" class="nav-search-ico"></ion-icon>
+        <input
+          type="search"
+          class="global-search-input"
+          id="globalSearchInput"
+          placeholder="Buscar productos..."
+          autocomplete="off"
+        />
+        <button class="nav-search-close" id="navSearchClose" aria-label="Cerrar búsqueda">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
   </header>
 
 

@@ -277,11 +277,17 @@ async function handleConfirm() {
   btn.disabled = true;
   btn.innerHTML = '<ion-icon name="hourglass-outline"></ion-icon> Procesando...';
 
+  /*
+   * Abrimos la ventana ANTES del await para que no sea bloqueada
+   * por el bloqueador de popups del navegador (iOS Safari, etc.).
+   */
+  const waWindow = window.open('', '_blank');
+
   try {
     /* 1. Calculate totals */
-    const subtotal        = Cart.total();
-    const horasReserva    = parseInt(state.config.tiempo_reserva_horas || '24');
-    const expiresAt       = new Date(Date.now() + horasReserva * 3600 * 1000).toISOString();
+    const subtotal     = Cart.total();
+    const horasReserva = parseInt(state.config.tiempo_reserva_horas || '24');
+    const expiresAt    = new Date(Date.now() + horasReserva * 3600 * 1000).toISOString();
 
     /* 2. Create pedido in Supabase */
     const { data: pedido, error } = await db.from('pedidos').insert({
@@ -298,12 +304,16 @@ async function handleConfirm() {
 
     if (error) throw error;
 
-    /* 3. Generate and open WhatsApp message */
+    /* 3. Generate WhatsApp message and navigate the pre-opened window */
     const mensaje = buildWhatsAppMessage({ items, subtotal, nombre, telefono, direccion, notas });
-    const numero  = state.config.whatsapp_numero || '';
+    const numero  = (state.config.whatsapp_numero || '').replace(/\D/g, '');
     const waURL   = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
-    window.open(waURL, '_blank');
+    if (waWindow) {
+      waWindow.location.href = waURL;
+    } else {
+      window.location.href = waURL;
+    }
 
     /* 4. Clear cart and show success */
     Cart.clear();
@@ -311,6 +321,7 @@ async function handleConfirm() {
 
   } catch (err) {
     console.error('Error creando pedido:', err);
+    waWindow?.close();
     btn.disabled = false;
     btn.innerHTML = '<ion-icon name="logo-whatsapp"></ion-icon> Confirmar pedido por WhatsApp';
     showGlobalError('Ocurrió un error al procesar tu pedido. Intentá de nuevo.');

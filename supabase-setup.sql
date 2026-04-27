@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS config (
 
 INSERT INTO config (key, value) VALUES
   ('nombre_tienda',         'Áurea Elizabeth'),
-  ('whatsapp_numero',       '549XXXXXXXXXX'),
+  ('whatsapp_numero',       '5493875218180'),
   ('instagram_usuario',     'aurea.elizabeth'),
   ('banner_activo',         'false'),
   ('banner_texto',          '🌿 Envío gratis en compras mayores a $10.000'),
@@ -26,13 +26,17 @@ ON CONFLICT (key) DO NOTHING;
 
 /* ── Categorías ── */
 CREATE TABLE IF NOT EXISTS categorias (
-  id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  nombre   TEXT NOT NULL,
-  icono    TEXT NOT NULL DEFAULT '🌿',
-  slug     TEXT NOT NULL UNIQUE,
-  orden    INT  NOT NULL DEFAULT 0,
-  activo   BOOLEAN NOT NULL DEFAULT true
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre     TEXT NOT NULL,
+  icono      TEXT NOT NULL DEFAULT '🌿',
+  slug       TEXT NOT NULL UNIQUE,
+  imagen_url TEXT,
+  orden      INT  NOT NULL DEFAULT 0,
+  activo     BOOLEAN NOT NULL DEFAULT true
 );
+
+-- Si la tabla ya existe, agregar la columna imagen_url:
+ALTER TABLE categorias ADD COLUMN IF NOT EXISTS imagen_url TEXT;
 
 INSERT INTO categorias (nombre, icono, slug, orden) VALUES
   ('Sahumerios',       '🪔', 'sahumerios',     1),
@@ -71,7 +75,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   productos_json JSONB NOT NULL,            -- snapshot del carrito al momento del pedido
   nombre_cliente TEXT NOT NULL,
-  telefono       TEXT,
+  telefono       TEXT NOT NULL,
   modalidad      TEXT NOT NULL DEFAULT 'envio',  -- 'envio' | 'retiro'
   direccion      TEXT,                       -- solo si modalidad = 'envio'
   notas          TEXT,

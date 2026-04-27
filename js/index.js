@@ -79,7 +79,8 @@ function applyConfig(config) {
   // WhatsApp & Instagram links
   if (config.whatsapp_numero) {
     const el = document.getElementById('footerWhatsapp');
-    if (el) el.href = `https://wa.me/${config.whatsapp_numero}`;
+    const cleanedNumber = config.whatsapp_numero.replace(/\D/g, '');
+    if (el) el.href = `https://wa.me/${cleanedNumber}`;
   }
 
   if (config.instagram_usuario) {
@@ -89,6 +90,41 @@ function applyConfig(config) {
 }
 
 
+/* ── Category visual backgrounds (multi-layer gradients, themed per category) ── */
+const CAT_GRADIENTS = {
+  'sahumerios': [
+    'radial-gradient(ellipse 75% 55% at 72% 18%, rgba(201,168,76,0.55) 0%, transparent 60%)',
+    'radial-gradient(ellipse 60% 75% at 22% 78%, rgba(107,63,160,0.65) 0%, transparent 58%)',
+    'linear-gradient(148deg, #0f0618 0%, #2a1050 45%, #0d0a0e 100%)'
+  ].join(', '),
+  'cristales': [
+    'radial-gradient(ellipse 70% 55% at 68% 22%, rgba(80,210,230,0.5) 0%, transparent 58%)',
+    'radial-gradient(ellipse 55% 70% at 25% 72%, rgba(30,90,165,0.6) 0%, transparent 55%)',
+    'linear-gradient(148deg, #05101f 0%, #0d2d62 48%, #05101f 100%)'
+  ].join(', '),
+  'aceites': [
+    'radial-gradient(ellipse 70% 52% at 70% 20%, rgba(155,210,80,0.45) 0%, transparent 58%)',
+    'radial-gradient(ellipse 55% 68% at 24% 76%, rgba(201,168,76,0.4) 0%, transparent 55%)',
+    'linear-gradient(148deg, #07120a 0%, #1c3d22 48%, #07120a 100%)'
+  ].join(', '),
+  'velas': [
+    'radial-gradient(ellipse 65% 55% at 62% 18%, rgba(240,170,50,0.65) 0%, transparent 58%)',
+    'radial-gradient(ellipse 52% 68% at 24% 78%, rgba(185,65,20,0.55) 0%, transparent 55%)',
+    'linear-gradient(148deg, #160600 0%, #3d1200 48%, #160600 100%)'
+  ].join(', '),
+  'inciensos': [
+    'radial-gradient(ellipse 70% 52% at 68% 20%, rgba(145,105,228,0.55) 0%, transparent 58%)',
+    'radial-gradient(ellipse 55% 70% at 25% 76%, rgba(38,18,105,0.65) 0%, transparent 55%)',
+    'linear-gradient(148deg, #070420 0%, #1a1055 48%, #070420 100%)'
+  ].join(', '),
+  'bienestar': [
+    'radial-gradient(ellipse 68% 52% at 65% 20%, rgba(210,125,148,0.55) 0%, transparent 58%)',
+    'radial-gradient(ellipse 54% 70% at 24% 76%, rgba(125,42,82,0.65) 0%, transparent 55%)',
+    'linear-gradient(148deg, #170610 0%, #3d102a 48%, #170610 100%)'
+  ].join(', '),
+};
+
+
 /* ── Load and render categories ── */
 async function loadCategories() {
   const grid = document.getElementById('categoriesGrid');
@@ -96,7 +132,7 @@ async function loadCategories() {
 
   const { data, error } = await db
     .from('categorias')
-    .select('id, nombre, icono, slug')
+    .select('id, nombre, icono, slug, imagen_url')
     .eq('activo', true)
     .order('orden');
 
@@ -105,12 +141,19 @@ async function loadCategories() {
     return;
   }
 
-  grid.innerHTML = data.map(cat => `
-    <a href="catalogo.html?categoria=${cat.slug}" class="category-card">
-      <span class="category-icon">${cat.icono}</span>
-      <span class="category-name">${cat.nombre}</span>
-    </a>
-  `).join('');
+  grid.innerHTML = data.map(cat => {
+    const bg = cat.imagen_url
+      ? `url(${cat.imagen_url}) center / cover no-repeat`
+      : (CAT_GRADIENTS[cat.slug] || 'linear-gradient(155deg, #1a0a2e, #6b3fa0)');
+
+    return `
+      <a href="catalogo.html?categoria=${cat.slug}"
+         class="category-photo-card"
+         style="background: ${bg}">
+        <span class="category-photo-name">${cat.nombre}</span>
+      </a>
+    `;
+  }).join('');
 }
 
 
@@ -234,3 +277,37 @@ async function init() {
 }
 
 init();
+
+
+/* ── Nav search → redirects to catalog ── */
+(function initNavSearch() {
+  const btn      = document.getElementById('navSearchBtn');
+  const bar      = document.getElementById('navSearchBar');
+  const input    = document.getElementById('globalSearchInput');
+  const closeBtn = document.getElementById('navSearchClose');
+  if (!btn || !bar) return;
+
+  function open() {
+    bar.classList.add('open');
+    btn.classList.add('active');
+    input.focus();
+  }
+  function close() {
+    bar.classList.remove('open');
+    btn.classList.remove('active');
+    input.value = '';
+  }
+
+  btn.addEventListener('click', () => bar.classList.contains('open') ? close() : open());
+  closeBtn.addEventListener('click', close);
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape') close();
+    if (e.key === 'Enter') {
+      const q = input.value.trim();
+      window.location.href = q
+        ? `catalogo.html?buscar=${encodeURIComponent(q)}`
+        : 'catalogo.html';
+    }
+  });
+})();

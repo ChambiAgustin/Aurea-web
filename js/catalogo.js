@@ -28,6 +28,7 @@ async function init() {
 function readURLParams() {
   const params = new URLSearchParams(location.search);
   if (params.get('categoria')) state.activeSlug = params.get('categoria');
+  if (params.get('buscar'))    state.search      = params.get('buscar');
 }
 
 /* ── Open modal if ?producto=id in URL ── */
@@ -332,6 +333,11 @@ function bindEvents() {
   const searchInput = document.getElementById('searchInput');
   const searchClear = document.getElementById('searchClear');
 
+  if (state.search) {
+    searchInput.value = state.search;
+    searchClear.classList.add('visible');
+  }
+
   let debounceTimer;
   searchInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
@@ -426,6 +432,47 @@ function fmt(n) {
 function esc(str) {
   return String(str).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
 }
+
+
+/* ── Nav search → filters catalog directly ── */
+(function initNavSearch() {
+  const btn      = document.getElementById('navSearchBtn');
+  const bar      = document.getElementById('navSearchBar');
+  const input    = document.getElementById('globalSearchInput');
+  const closeBtn = document.getElementById('navSearchClose');
+  if (!btn || !bar) return;
+
+  function open() {
+    bar.classList.add('open');
+    btn.classList.add('active');
+    input.focus();
+  }
+  function close() {
+    bar.classList.remove('open');
+    btn.classList.remove('active');
+    input.value = '';
+  }
+
+  btn.addEventListener('click', () => bar.classList.contains('open') ? close() : open());
+  closeBtn.addEventListener('click', close);
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape') close();
+    if (e.key === 'Enter') {
+      const q = input.value.trim();
+      const catalogInput = document.getElementById('searchInput');
+      const catalogClear = document.getElementById('searchClear');
+      if (catalogInput) {
+        catalogInput.value = q;
+        state.search = q;
+        catalogClear?.classList.toggle('visible', q.length > 0);
+        renderFiltered();
+        close();
+        document.getElementById('catalogCount')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  });
+})();
 
 
 /* ── Go ── */

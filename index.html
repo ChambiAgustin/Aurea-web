@@ -113,6 +113,10 @@
           <li><a href="#contacto">Contacto</a></li>
         </ul>
 
+        <button class="nav-search-btn" id="navSearchBtn" aria-label="Buscar">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+
         <a href="carrito.html" class="nav-cart-btn" id="navCartBtn">
           <ion-icon name="bag-outline"></ion-icon>
           Carrito
@@ -120,6 +124,23 @@
         </a>
 
       </div>
+
+      <div class="nav-search-bar" id="navSearchBar">
+        <div class="nav-search-bar-inner">
+          <ion-icon name="search-outline" class="nav-search-ico"></ion-icon>
+          <input
+            type="search"
+            class="global-search-input"
+            id="globalSearchInput"
+            placeholder="Buscar productos..."
+            autocomplete="off"
+          />
+          <button class="nav-search-close" id="navSearchClose" aria-label="Cerrar búsqueda">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
     </header>
 
 
@@ -131,7 +152,7 @@
       <div class="container">
         <div class="hero-content">
 
-          <p class="hero-eyebrow">Bienvenida a Áurea Elizabeth</p>
+          <p class="hero-eyebrow">Bienvenida a <span class="aurea-text">Áurea</span> Elizabeth</p>
 
           <h1 class="hero-title">
             Artículos
@@ -160,6 +181,25 @@
     </section>
 
 
+    <!-- ── Marquee Strip ── -->
+    <div class="marquee-strip" aria-hidden="true">
+      <div class="marquee-track">
+        <span class="marquee-text">Pequeños rituales, grandes momentos de calma</span>
+        <span class="marquee-sep">✦</span>
+        <span class="marquee-text">Detalles que transforman tu energía</span>
+        <span class="marquee-sep">✦</span>
+        <span class="marquee-text">Honra tu tiempo, habita tu calma</span>
+        <span class="marquee-sep">✦</span>
+        <span class="marquee-text">Pequeños rituales, grandes momentos de calma</span>
+        <span class="marquee-sep">✦</span>
+        <span class="marquee-text">Detalles que transforman tu energía</span>
+        <span class="marquee-sep">✦</span>
+        <span class="marquee-text">Honra tu tiempo, habita tu calma</span>
+        <span class="marquee-sep">✦</span>
+      </div>
+    </div>
+
+
     <!-- ── Categorías ── -->
     <section class="categories-section" id="categorias">
       <div class="container">
@@ -170,7 +210,7 @@
           <div class="section-divider"></div>
         </div>
 
-        <div class="categories-grid" id="categoriesGrid">
+        <div class="categories-photo-grid" id="categoriesGrid">
           <!-- Skeletons mientras cargan -->
           <div class="skeleton" style="min-height:130px"></div>
           <div class="skeleton" style="min-height:130px"></div>
@@ -237,7 +277,7 @@
           <div>
             <p class="footer-title">Contacto</p>
             <ul class="footer-links">
-              <li><a href="#" id="footerWhatsapp">
+              <li><a href="#" id="footerWhatsapp" target="_blank" rel="noopener noreferrer">
                 <ion-icon name="logo-whatsapp"></ion-icon> WhatsApp
               </a></li>
               <li><a href="#" id="footerInstagram">
@@ -249,7 +289,7 @@
         </div>
 
         <div class="footer-bottom">
-          <p class="footer-copy">© 2025 Áurea Elizabeth. Todos los derechos reservados.</p>
+          <p class="footer-copy">© 2025 <span class="aurea-text">Áurea</span> Elizabeth. Todos los derechos reservados.</p>
         </div>
 
       </div>

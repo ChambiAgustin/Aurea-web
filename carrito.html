@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +9,9 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
 
   <!-- Ionicons -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -21,6 +24,7 @@
 
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
   <!-- ══════════════════════════════════════
@@ -121,39 +125,22 @@
               <!-- Name (shared) -->
               <div class="form-group">
                 <label class="form-label" for="fieldNombre">Nombre completo *</label>
-                <input
-                  type="text"
-                  id="fieldNombre"
-                  class="form-input"
-                  placeholder="Tu nombre y apellido"
-                  required
-                  autocomplete="name"
-                />
+                <input type="text" id="fieldNombre" class="form-input" placeholder="Tu nombre y apellido" required
+                  autocomplete="name" />
               </div>
 
               <!-- Phone (shared) -->
               <div class="form-group">
-                <label class="form-label" for="fieldTelefono">Teléfono (opcional)</label>
-                <input
-                  type="tel"
-                  id="fieldTelefono"
-                  class="form-input"
-                  placeholder="Ej: 11 1234-5678"
-                  autocomplete="tel"
-                />
+                <label class="form-label" for="fieldTelefono">Teléfono *</label>
+                <input type="tel" id="fieldTelefono" class="form-input" placeholder="Ej: 11 1234-5678"
+                  autocomplete="tel" />
               </div>
 
               <!-- Address (only envío) -->
               <div class="form-group" id="groupDireccion">
                 <label class="form-label" for="fieldDireccion">Dirección de entrega *</label>
-                <input
-                  type="text"
-                  id="fieldDireccion"
-                  class="form-input"
-                  placeholder="Calle, número, piso/depto, localidad"
-                  required
-                  autocomplete="street-address"
-                />
+                <input type="text" id="fieldDireccion" class="form-input"
+                  placeholder="Calle, número, piso/depto, localidad" required autocomplete="street-address" />
               </div>
 
               <!-- Pickup info (only retiro) -->
@@ -168,12 +155,8 @@
               <!-- Notes (shared) -->
               <div class="form-group">
                 <label class="form-label" for="fieldNotas">Notas adicionales (opcional)</label>
-                <textarea
-                  id="fieldNotas"
-                  class="form-textarea"
-                  placeholder="Indicaciones especiales, referencias, etc."
-                  rows="3"
-                ></textarea>
+                <textarea id="fieldNotas" class="form-textarea" placeholder="Indicaciones especiales, referencias, etc."
+                  rows="3"></textarea>
               </div>
 
             </form>
@@ -298,4 +281,5 @@
   </script>
 
 </body>
+
 </html>
