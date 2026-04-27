@@ -1,83 +1,77 @@
 /* =============================================
-   ÁUREA ELIZABETH — Service Worker
+   ÁUREA ELIZABETH — Service Worker v4
    Estrategia:
-   - Assets estáticos (HTML/CSS/JS/fonts/logo): Cache-First
-   - Supabase API (datos de productos/config):   Network-First con fallback
+   - HTML / CSS / JS propios:    Network-First (siempre frescos)
+   - Imágenes propias:           Cache-First   (pesadas, cambian poco)
+   - Supabase API:               Network-First con fallback
+   - Google Fonts / CDN:         Cache-First   (inmutables)
    ============================================= */
 
-const CACHE_NAME     = 'aurea-v3';
-const RUNTIME_CACHE  = 'aurea-runtime-v3';
+const CACHE_NAME    = 'aurea-v4';
+const RUNTIME_CACHE = 'aurea-runtime-v4';
 
-/* Assets que se pre-cachean en el install */
+/* Solo pre-cacheamos assets que NO cambian con cada deploy */
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/catalogo.html',
-  '/carrito.html',
-  '/style.css',
-  '/admin.css',
-  '/site.webmanifest',
   '/logo.jpeg',
-  '/js/supabase-client.js',
-  '/js/cart.js',
-  '/js/index.js',
-  '/js/catalogo.js',
-  '/js/carrito.js',
+  '/site.webmanifest',
 ];
 
-/* ── INSTALL: pre-cachear assets estáticos ── */
+/* ── INSTALL ── */
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(PRECACHE_ASSETS))
-      .then(() => self.skipWaiting())   /* Activa inmediatamente sin esperar que se cierren los tabs */
+      .then(() => self.skipWaiting())
   );
 });
 
 /* ── ACTIVATE: limpiar caches viejas ── */
 self.addEventListener('activate', event => {
-  const VALID_CACHES = [CACHE_NAME, RUNTIME_CACHE];
-
+  const VALID = [CACHE_NAME, RUNTIME_CACHE];
   event.waitUntil(
     caches.keys()
-      .then(cacheNames => Promise.all(
-        cacheNames
-          .filter(name => !VALID_CACHES.includes(name))
-          .map(name => caches.delete(name))
+      .then(names => Promise.all(
+        names.filter(n => !VALID.includes(n)).map(n => caches.delete(n))
       ))
-      .then(() => self.clients.claim())  /* Toma control de todos los tabs sin reload */
+      .then(() => self.clients.claim())
   );
 });
 
-/* ── FETCH: lógica de respuesta ── */
+/* ── FETCH ── */
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  /* ── 1. Supabase API: Network-First ──
-     Intenta la red primero; si falla, sirve desde cache.
-     No queremos datos stale de productos/stock. */
+  if (request.method !== 'GET') return;
+
+  /* 1. Supabase API: Network-First */
   if (url.hostname.includes('supabase.co')) {
     event.respondWith(networkFirst(request));
     return;
   }
 
-  /* ── 2. Google Fonts: Cache-First ──
-     Las fuentes no cambian; guardarlas en runtime cache. */
-  if (url.hostname.includes('fonts.googleapis.com') || url.hostname.includes('fonts.gstatic.com')) {
+  /* 2. Fonts / CDN externos: Cache-First (nunca cambian) */
+  if (
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com') ||
+    url.hostname.includes('unpkg.com') ||
+    url.hostname.includes('cdn.jsdelivr.net')
+  ) {
     event.respondWith(cacheFirst(request, RUNTIME_CACHE));
     return;
   }
 
-  /* ── 3. Ionicons CDN: Cache-First ── */
-  if (url.hostname.includes('unpkg.com') || url.hostname.includes('cdn.jsdelivr.net')) {
-    event.respondWith(cacheFirst(request, RUNTIME_CACHE));
-    return;
-  }
+  /* 3. Assets propios del sitio */
+  if (url.origin === self.location.origin) {
+    const isImage = /\.(jpe?g|png|webp|gif|svg|ico)$/i.test(url.pathname);
 
-  /* ── 4. Assets estáticos propios: Cache-First ── */
-  if (request.method === 'GET') {
-    event.respondWith(cacheFirst(request, CACHE_NAME));
+    if (isImage) {
+      /* Imágenes: Cache-First — son pesadas y cambian raramente */
+      event.respondWith(cacheFirst(request, CACHE_NAME));
+    } else {
+      /* HTML, CSS, JS, manifest: Network-First — deben estar siempre actualizados */
+      event.respondWith(networkFirst(request));
+    }
   }
 });
 
@@ -85,42 +79,29 @@ self.addEventListener('fetch', event => {
    ESTRATEGIAS
    ══════════════════════════════════════════ */
 
-/**
- * Cache-First: sirve desde cache si existe, si no, fetch + guarda en cache.
- * Ideal para assets estáticos que no cambian frecuentemente.
- */
 async function cacheFirst(request, cacheName = CACHE_NAME) {
   const cached = await caches.match(request);
   if (cached) return cached;
 
   try {
     const response = await fetch(request);
-    /* Solo cacheamos respuestas válidas (no errores) */
     if (response && response.status === 200 && response.type !== 'opaque') {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
     }
     return response;
   } catch (_err) {
-    /* Sin red y sin cache: devolvemos página offline si es navegación */
-    if (request.mode === 'navigate') {
-      return caches.match('/index.html');
-    }
+    if (request.mode === 'navigate') return caches.match('/index.html');
     return new Response('', { status: 408 });
   }
 }
 
-/**
- * Network-First: intenta la red, con timeout de 4 segundos.
- * Si falla o tarda demasiado, sirve desde cache.
- * Ideal para datos dinámicos de Supabase.
- */
 async function networkFirst(request) {
-  const TIMEOUT_MS = 4000;
+  const TIMEOUT_MS = 5000;
 
   const networkPromise = fetch(request.clone())
     .then(response => {
-      if (response && response.status === 200) {
+      if (response && response.status === 200 && response.type !== 'opaque') {
         caches.open(RUNTIME_CACHE)
           .then(cache => cache.put(request, response.clone()));
       }
@@ -128,14 +109,16 @@ async function networkFirst(request) {
     });
 
   const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Network timeout')), TIMEOUT_MS)
+    setTimeout(() => reject(new Error('timeout')), TIMEOUT_MS)
   );
 
   try {
     return await Promise.race([networkPromise, timeoutPromise]);
   } catch (_err) {
     const cached = await caches.match(request);
-    return cached || new Response(JSON.stringify({ error: 'Sin conexión' }), {
+    if (cached) return cached;
+    if (request.mode === 'navigate') return caches.match('/index.html');
+    return new Response(JSON.stringify({ error: 'Sin conexión' }), {
       status: 503,
       headers: { 'Content-Type': 'application/json' }
     });

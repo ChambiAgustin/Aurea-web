@@ -112,12 +112,39 @@ async function loadProducts() {
   }
 
   state.products = data || [];
+  renderFeatured();
   renderFiltered();
+}
+
+
+/* ── Render featured strip (only shown on unfiltered "Todos" view) ── */
+function renderFeatured() {
+  const section  = document.getElementById('catalogFeatured');
+  const grid     = document.getElementById('catalogFeaturedGrid');
+  const featured = state.products.filter(p => p.destacado);
+  if (!featured.length) return;
+
+  grid.innerHTML = featured.map(buildCard).join('');
+
+  grid.querySelectorAll('.product-card').forEach(card => {
+    const id = card.dataset.id;
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.product-add-btn, .product-share-btn')) return;
+      const p = state.products.find(x => x.id === id);
+      if (p) openModal(p);
+    });
+  });
+
+  section.classList.remove('hidden');
 }
 
 
 /* ── Apply active filters and sort, then render ── */
 function renderFiltered() {
+  const featuredSection = document.getElementById('catalogFeatured');
+  const showFeatured = state.activeSlug === 'all' && !state.search.trim();
+  featuredSection?.classList.toggle('hidden', !showFeatured);
+
   let filtered = [...state.products];
 
   // Category filter

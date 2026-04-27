@@ -148,3 +148,45 @@ SELECT
 FROM productos p;
 
 GRANT SELECT ON stock_disponible TO anon, authenticated;
+
+/* ══════════════════════════════════════════
+   STORAGE: bucket para imágenes de productos y categorías
+   Ejecutar DESPUÉS de que el bucket exista en el Dashboard,
+   o dejar que este INSERT lo cree.
+   ══════════════════════════════════════════ */
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'productos',
+  'productos',
+  true,
+  5242880,
+  ARRAY['image/jpeg', 'image/png', 'image/webp']
+)
+ON CONFLICT (id) DO UPDATE SET
+  public             = true,
+  file_size_limit    = 5242880,
+  allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp'];
+
+/* Políticas de Storage (DROP primero para que sea idempotente) */
+DROP POLICY IF EXISTS "storage_public_read"   ON storage.objects;
+DROP POLICY IF EXISTS "storage_admin_insert"  ON storage.objects;
+DROP POLICY IF EXISTS "storage_admin_update"  ON storage.objects;
+DROP POLICY IF EXISTS "storage_admin_delete"  ON storage.objects;
+
+-- Lectura pública: cualquiera puede ver las imágenes
+CREATE POLICY "storage_public_read" ON storage.objects
+  FOR SELECT USING (bucket_id = 'productos');
+
+-- Solo el admin autenticado puede subir, reemplazar y eliminar
+CREATE POLICY "storage_admin_insert" ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'productos');
+
+CREATE POLICY "storage_admin_update" ON storage.objects
+  FOR UPDATE TO authenticated
+  USING (bucket_id = 'productos');
+
+CREATE POLICY "storage_admin_delete" ON storage.objects
+  FOR DELETE TO authenticated
+  USING (bucket_id = 'productos');

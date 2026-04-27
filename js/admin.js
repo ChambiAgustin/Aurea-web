@@ -45,6 +45,7 @@ function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('adminApp').classList.remove('hidden');
   document.getElementById('topbarUser').textContent = admin.user?.email || '';
+  initStorage();
   bindApp();
   showSection('dashboard');
 }
@@ -631,15 +632,54 @@ function resetCatImageUpload() {
   document.getElementById('catImageInput').value = '';
 }
 
+/* ── Asegura que el bucket exista al iniciar la sesión admin ── */
+async function initStorage() {
+  try {
+    const { error } = await db.storage.getBucket('productos');
+    if (error) {
+      const { error: createErr } = await db.storage.createBucket('productos', {
+        public: true,
+        fileSizeLimit: 5242880,
+        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+      });
+      if (!createErr) console.log('[Storage] Bucket "productos" creado automáticamente.');
+      else console.warn('[Storage] No se pudo crear el bucket automáticamente. Ejecutá el SQL de setup en Supabase.');
+    }
+  } catch (e) {
+    console.warn('[Storage] initStorage:', e.message);
+  }
+}
+
 async function uploadImagen(file, name) {
   const ext  = file.name.split('.').pop().toLowerCase();
   const path = `${name}.${ext}`;
 
-  const { error } = await db.storage
+  let { error } = await db.storage
     .from('productos')
     .upload(path, file, { upsert: true, contentType: file.type });
 
-  if (error) throw new Error(`Storage error: ${error.message}`);
+  /* Si el bucket no existe, intentamos crearlo y reintentamos */
+  if (error && (error.statusCode === 404 || error.error === 'Bucket not found' || error.message?.includes('not found'))) {
+    await db.storage.createBucket('productos', {
+      public: true, fileSizeLimit: 5242880,
+      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    });
+    const retry = await db.storage
+      .from('productos')
+      .upload(path, file, { upsert: true, contentType: file.type });
+    error = retry.error;
+  }
+
+  if (error) {
+    const msg = error.message || error.error || JSON.stringify(error);
+    if (msg.includes('Bucket') || msg.includes('not found') || error.statusCode === 404) {
+      throw new Error('Bucket de imágenes no encontrado. Ejecutá el script de Storage en Supabase SQL Editor.');
+    }
+    if (error.statusCode === 403 || msg.includes('policy') || msg.includes('permission')) {
+      throw new Error('Sin permisos para subir imágenes. Ejecutá las políticas de Storage del SQL de setup.');
+    }
+    throw new Error(`Error al subir imagen: ${msg}`);
+  }
 
   const { data: { publicUrl } } = db.storage.from('productos').getPublicUrl(path);
   return publicUrl;
@@ -754,34 +794,61 @@ async function saveCategoria() {
   btn.innerHTML = '<ion-icon name="hourglass-outline"></ion-icon> Guardando...';
 
   try {
+    /* 1. Subir imagen si hay archivo seleccionado */
     let imagen_url = null;
     if (admin.catImageFile) {
-      imagen_url = await uploadImagen(admin.catImageFile, 'cat_' + (admin.editCategoriaId || 'new_' + Date.now()));
+      imagen_url = await uploadImagen(
+        admin.catImageFile,
+        'cat_' + (admin.editCategoriaId || 'new_' + Date.now())
+      );
     } else if (admin.editCategoriaId) {
       const existing = admin.categorias.find(c => c.id === admin.editCategoriaId);
       imagen_url = existing?.imagen_url || null;
     }
 
+    const icono = admin.editCategoriaId
+      ? (admin.categorias.find(c => c.id === admin.editCategoriaId)?.icono || '🌿')
+      : '🌿';
+
     const payload = {
-      nombre, slug, orden,
-      icono: admin.editCategoriaId
-        ? (admin.categorias.find(c => c.id === admin.editCategoriaId)?.icono || '🌿')
-        : '🌿',
+      nombre, slug, orden, icono,
       ...(imagen_url !== null && { imagen_url }),
     };
 
-    const { error } = admin.editCategoriaId
+    /* 2. Guardar en BD */
+    let { error } = admin.editCategoriaId
       ? await db.from('categorias').update(payload).eq('id', admin.editCategoriaId)
       : await db.from('categorias').insert({ ...payload, activo: true });
 
-    if (error) { toast(error.code === '23505' ? 'El slug ya existe.' : 'Error al guardar.', 'error'); return; }
+    /* 3. Si falla por columna imagen_url inexistente, reintentar sin ella */
+    if (error && (error.message?.includes('imagen_url') || error.code === '42703')) {
+      console.warn('[DB] Columna imagen_url ausente, guardando sin imagen.');
+      const { imagen_url: _omit, ...payloadBase } = payload;
+      const retry = admin.editCategoriaId
+        ? await db.from('categorias').update(payloadBase).eq('id', admin.editCategoriaId)
+        : await db.from('categorias').insert({ ...payloadBase, activo: true });
+      error = retry.error;
+      if (!error) {
+        toast('Categoría guardada sin imagen. Para habilitar imágenes ejecutá el SQL de setup en Supabase.', 'info');
+        closeCategoriaModal();
+        loadCategorias();
+        return;
+      }
+    }
+
+    if (error) {
+      if (error.code === '23505') toast('El slug ya existe.', 'error');
+      else { toast(`Error: ${error.message}`, 'error'); console.error(error); }
+      return;
+    }
 
     toast(admin.editCategoriaId ? 'Categoría actualizada ✓' : 'Categoría creada ✓', 'success');
     closeCategoriaModal();
     loadCategorias();
+
   } catch (err) {
     console.error(err);
-    toast('Error al guardar la categoría.', 'error');
+    toast(err.message || 'Error al guardar la categoría.', 'error');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<ion-icon name="save-outline"></ion-icon> Guardar';
