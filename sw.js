@@ -5,8 +5,8 @@
    - Supabase API (datos de productos/config):   Network-First con fallback
    ============================================= */
 
-const CACHE_NAME     = 'aurea-v1';
-const RUNTIME_CACHE  = 'aurea-runtime-v1';
+const CACHE_NAME     = 'aurea-v3';
+const RUNTIME_CACHE  = 'aurea-runtime-v3';
 
 /* Assets que se pre-cachean en el install */
 const PRECACHE_ASSETS = [

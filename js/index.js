@@ -311,3 +311,16 @@ init();
     }
   });
 })();
+
+
+/* ── Banner hide on scroll ── */
+(function initBannerScroll() {
+  const banner = document.getElementById('promoBanner');
+  const nav    = document.getElementById('navHeader');
+  if (!banner || !nav) return;
+  window.addEventListener('scroll', () => {
+    const past = window.scrollY > 60;
+    banner.classList.toggle('scrolled-out', past);
+    nav.classList.toggle('banner-scrolled-out', past);
+  }, { passive: true });
+})();

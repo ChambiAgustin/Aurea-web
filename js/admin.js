@@ -11,6 +11,7 @@ const admin = {
   editPromocionId: null,
   pedidoRefresh:  null,
   newImageFile:   null,
+  catImageFile:   null,
 };
 
 
@@ -588,6 +589,48 @@ function resetImageUpload() {
   document.getElementById('imageInput').value = '';
 }
 
+/* ── Category image upload ── */
+function bindCatImageUpload() {
+  const area      = document.getElementById('catImageUploadArea');
+  const input     = document.getElementById('catImageInput');
+  const changeBtn = document.getElementById('catImageChangeBtn');
+
+  const handleFile = (file) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast('La imagen no puede superar 5MB.', 'error'); return; }
+    admin.catImageFile = file;
+    showCatImagePreview(URL.createObjectURL(file));
+  };
+
+  area.onclick = () => input.click();
+  changeBtn.onclick = (e) => { e.stopPropagation(); input.click(); };
+  input.onchange = (e) => handleFile(e.target.files[0]);
+
+  area.addEventListener('dragover',  (e) => { e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', ()  => area.classList.remove('drag-over'));
+  area.addEventListener('drop', (e) => {
+    e.preventDefault();
+    area.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file?.type.startsWith('image/')) handleFile(file);
+  });
+}
+
+function showCatImagePreview(url) {
+  document.getElementById('catImagePreview').src = url;
+  document.getElementById('catImagePreview').classList.remove('hidden');
+  document.getElementById('catImageUploadPlaceholder').classList.add('hidden');
+  document.getElementById('catImageChangeBtn').classList.remove('hidden');
+}
+
+function resetCatImageUpload() {
+  document.getElementById('catImagePreview').src = '';
+  document.getElementById('catImagePreview').classList.add('hidden');
+  document.getElementById('catImageUploadPlaceholder').classList.remove('hidden');
+  document.getElementById('catImageChangeBtn').classList.add('hidden');
+  document.getElementById('catImageInput').value = '';
+}
+
 async function uploadImagen(file, name) {
   const ext  = file.name.split('.').pop().toLowerCase();
   const path = `${name}.${ext}`;
@@ -627,12 +670,16 @@ async function loadCategorias() {
     <div class="admin-table-wrap">
       <table class="admin-table">
         <thead><tr>
-          <th>Icono</th><th>Nombre</th><th>Slug</th><th>Orden</th><th>Activo</th><th>Acciones</th>
+          <th>Imagen</th><th>Nombre</th><th>Slug</th><th>Orden</th><th>Activo</th><th>Acciones</th>
         </tr></thead>
         <tbody>
           ${admin.categorias.map(c => `
             <tr>
-              <td style="font-size:1.5rem">${c.icono}</td>
+              <td>
+                ${c.imagen_url
+                  ? `<div class="table-img"><img src="${c.imagen_url}" alt="${esc(c.nombre)}" loading="lazy" /></div>`
+                  : `<span style="font-size:1.5rem">${c.icono || '🌿'}</span>`}
+              </td>
               <td class="td-name">${c.nombre}</td>
               <td><code>${c.slug}</code></td>
               <td>${c.orden}</td>
@@ -660,17 +707,19 @@ async function loadCategorias() {
 
 function openCategoriaModal(id = null) {
   admin.editCategoriaId = id;
-  ['cIcono','cNombre','cSlug','cOrden'].forEach(f => document.getElementById(f).value = '');
+  admin.catImageFile    = null;
+  ['cNombre','cSlug','cOrden'].forEach(f => document.getElementById(f).value = '');
+  resetCatImageUpload();
 
   document.getElementById('categoriaModalTitle').textContent = id ? 'Editar categoría' : 'Nueva categoría';
 
   if (id) {
     const cat = admin.categorias.find(c => c.id === id);
     if (!cat) return;
-    document.getElementById('cIcono').value  = cat.icono;
     document.getElementById('cNombre').value = cat.nombre;
     document.getElementById('cSlug').value   = cat.slug;
     document.getElementById('cOrden').value  = cat.orden;
+    if (cat.imagen_url) showCatImagePreview(cat.imagen_url);
   }
 
   /* Auto-generate slug from name */
@@ -680,6 +729,7 @@ function openCategoriaModal(id = null) {
     }
   };
 
+  bindCatImageUpload();
   document.getElementById('categoriaModalSave').onclick   = saveCategoria;
   document.getElementById('categoriaModalCancel').onclick = closeCategoriaModal;
   document.getElementById('categoriaModalClose').onclick  = closeCategoriaModal;
@@ -689,27 +739,53 @@ function openCategoriaModal(id = null) {
 function closeCategoriaModal() {
   document.getElementById('categoriaModal').classList.add('hidden');
   admin.editCategoriaId = null;
+  admin.catImageFile    = null;
 }
 
 async function saveCategoria() {
   const nombre = document.getElementById('cNombre').value.trim();
   const slug   = document.getElementById('cSlug').value.trim();
-  const icono  = document.getElementById('cIcono').value.trim() || '🌿';
   const orden  = parseInt(document.getElementById('cOrden').value) || 0;
 
   if (!nombre || !slug) { toast('Nombre y slug son obligatorios.', 'error'); return; }
 
-  const payload = { nombre, slug, icono, orden };
+  const btn = document.getElementById('categoriaModalSave');
+  btn.disabled = true;
+  btn.innerHTML = '<ion-icon name="hourglass-outline"></ion-icon> Guardando...';
 
-  const { error } = admin.editCategoriaId
-    ? await db.from('categorias').update(payload).eq('id', admin.editCategoriaId)
-    : await db.from('categorias').insert({ ...payload, activo: true });
+  try {
+    let imagen_url = null;
+    if (admin.catImageFile) {
+      imagen_url = await uploadImagen(admin.catImageFile, 'cat_' + (admin.editCategoriaId || 'new_' + Date.now()));
+    } else if (admin.editCategoriaId) {
+      const existing = admin.categorias.find(c => c.id === admin.editCategoriaId);
+      imagen_url = existing?.imagen_url || null;
+    }
 
-  if (error) { toast(error.code === '23505' ? 'El slug ya existe.' : 'Error al guardar.', 'error'); return; }
+    const payload = {
+      nombre, slug, orden,
+      icono: admin.editCategoriaId
+        ? (admin.categorias.find(c => c.id === admin.editCategoriaId)?.icono || '🌿')
+        : '🌿',
+      ...(imagen_url !== null && { imagen_url }),
+    };
 
-  toast(admin.editCategoriaId ? 'Categoría actualizada ✓' : 'Categoría creada ✓', 'success');
-  closeCategoriaModal();
-  loadCategorias();
+    const { error } = admin.editCategoriaId
+      ? await db.from('categorias').update(payload).eq('id', admin.editCategoriaId)
+      : await db.from('categorias').insert({ ...payload, activo: true });
+
+    if (error) { toast(error.code === '23505' ? 'El slug ya existe.' : 'Error al guardar.', 'error'); return; }
+
+    toast(admin.editCategoriaId ? 'Categoría actualizada ✓' : 'Categoría creada ✓', 'success');
+    closeCategoriaModal();
+    loadCategorias();
+  } catch (err) {
+    console.error(err);
+    toast('Error al guardar la categoría.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<ion-icon name="save-outline"></ion-icon> Guardar';
+  }
 }
 
 async function deleteCategoria(id, nombre) {

@@ -441,7 +441,7 @@
        CATEGORIA FORM MODAL
        ══════════════════════════════════════ -->
   <div class="admin-modal-overlay hidden" id="categoriaModal">
-    <div class="admin-modal admin-modal--sm">
+    <div class="admin-modal">
 
       <div class="admin-modal-header">
         <h3 class="admin-modal-title" id="categoriaModalTitle">Nueva categoría</h3>
@@ -451,10 +451,22 @@
       </div>
 
       <div class="admin-modal-body">
-        <div class="form-group">
-          <label class="form-label">Icono (emoji) *</label>
-          <input type="text" class="form-input" id="cIcono" placeholder="🌿" maxlength="4" />
+
+        <!-- Imagen de categoría -->
+        <div class="image-upload-area" id="catImageUploadArea">
+          <img class="image-preview hidden" id="catImagePreview" alt="Preview" />
+          <div class="image-upload-placeholder" id="catImageUploadPlaceholder">
+            <ion-icon name="image-outline"></ion-icon>
+            <p>Hacé click o arrastrá una imagen</p>
+            <span>JPG, PNG, WEBP — máx. 5MB</span>
+          </div>
+          <input type="file" id="catImageInput" accept="image/jpeg,image/png,image/webp" class="hidden" />
+          <button class="image-change-btn hidden" id="catImageChangeBtn">
+            <ion-icon name="camera-outline"></ion-icon>
+            Cambiar imagen
+          </button>
         </div>
+
         <div class="form-group">
           <label class="form-label">Nombre *</label>
           <input type="text" class="form-input" id="cNombre" placeholder="Ej: Sahumerios" required />

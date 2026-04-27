@@ -305,10 +305,18 @@ body {
   color: var(--accent-gold-lt);
   background: linear-gradient(90deg, var(--bg-dark), rgba(107,63,160,0.25), var(--bg-dark));
   border-bottom: 1px solid var(--border-glass);
+  transition: transform 0.3s ease, opacity 0.25s ease;
 }
 
 .promo-bar.active { display: block; }
+.promo-bar.active.scrolled-out {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .nav-header.has-promo { top: 34px; }
+.nav-header.has-promo.banner-scrolled-out { top: 0; }
 
 
 /* =============================================
@@ -362,25 +370,43 @@ body {
 .nav-links a:hover,
 .nav-links a.active { color: var(--accent-gold); }
 
-.nav-search-btn {
-  display: flex;
+.nav-search-bar-btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: var(--text-muted);
-  font-size: 1.15rem;
+  gap: var(--sp-2);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-full);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
   transition: all var(--t-base);
-  border: 1px solid transparent;
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.nav-search-btn:hover,
-.nav-search-btn.active {
-  color: var(--accent-gold);
+.nav-search-bar-btn ion-icon {
+  color: var(--text-muted);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.nav-search-bar-btn:hover {
+  color: var(--text-muted);
   border-color: var(--border-glass);
+  background: rgba(255,255,255,0.07);
+}
+
+.nav-search-bar-btn.active {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
   background: rgba(201,168,76,0.06);
+}
+
+@media (max-width: 480px) {
+  .nav-search-bar-btn span { display: none; }
 }
 
 /* Search bar that slides below nav */

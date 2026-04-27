@@ -364,7 +364,7 @@
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--r-lg);
-  padding: var(--sp-5) var(--sp-6);
+  padding: var(--sp-7) var(--sp-8) var(--sp-6) var(--sp-10);
   backdrop-filter: blur(8px);
   border-left-width: 3px;
 }
@@ -517,8 +517,8 @@ code {
    BUTTONS (admin-specific)
    ══════════════════════════════════════════ */
 .btn-sm {
-  padding: var(--sp-2) var(--sp-5) !important;
-  font-size: 0.72rem !important;
+  padding: var(--sp-3) var(--sp-6) !important;
+  font-size: 0.75rem !important;
 }
 
 .btn-success {
@@ -526,12 +526,12 @@ code {
   align-items: center;
   gap: var(--sp-2);
   font-family: var(--font-heading);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #fff;
   background: #388E3C;
-  padding: var(--sp-2) var(--sp-4);
+  padding: var(--sp-3) var(--sp-6);
   border-radius: var(--r-full);
   border: none;
   cursor: pointer;
@@ -544,12 +544,12 @@ code {
   align-items: center;
   gap: var(--sp-2);
   font-family: var(--font-heading);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #fff;
   background: #C62828;
-  padding: var(--sp-2) var(--sp-4);
+  padding: var(--sp-3) var(--sp-6);
   border-radius: var(--r-full);
   border: none;
   cursor: pointer;
